@@ -1,28 +1,29 @@
 # See: https://docs.github.com/en/actions/creating-actions
-name: TODO:Action Name
+name: Gem Push
 author: FreeAgent
-description: TODO:Description
-#  inputs:
-#    foo:
-#      description: Foo level
-#      required: true
-#      default: 23
-#  outputs:
-#    bar:
-#      description: Bar output
+description: Push gem packages to a rubygems compatible repo
+inputs:
+  package-glob:
+    description: "File glob to match the .gem files to push"
+    default: "pkg/*.gem"
 
 runs:
-  # Pick one of the 3 possible types of action:
-
-  #using: 'composite'
-  #steps:
-  #  - name: Step One
-  #    shell: bash
-  #    run: |
-  #      echo TODO: Step One
-
-  #using: 'node12'
-  #main: main.js
-
-  #using: 'docker'
-  #image: 'Dockerfile'
+  using: "composite"
+  steps:
+    - name: Push Gem
+      shell: bash
+      env:
+        # Expects GEM_HOST and GEM_HOST_API_KEY to be set
+        GEM_GLOB: ${{ inputs.package-glob }}
+      run: |
+        if ! gem push --host "$GEM_HOST" $GEM_GLOB | tee push.out; then
+          gemerr=$?
+          if grep "has already been pushed" push.out; then
+            echo Gem Already Pushed
+            exit 0
+          fi
+          echo ::error::Gem Push Failed
+          cat push.out | sed 's/^/::error::/'
+          exit $gemerr
+        fi
+        exit 0
