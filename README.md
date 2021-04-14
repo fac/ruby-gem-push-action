@@ -1,18 +1,71 @@
-# Action Name
+# Ruby Gem Push
 
 ## Description
 
+Action to push gems to a gem cutter compatible repository. Probably RubyGems or GitHub Package Repository. It expects the authentication to have already been setup, using the environment variables GEM_HOST and GEM_HOST_API_KEY. See [fac/rubygems-setup-gpr-action](https://github.com/fac/rubygems-setup-gpr-action) for an action to set this up for you to push to GPR.
+
+If the gem version already exists in the repo the action will no-op and still set a success status. This makes it easier to integrate into workflows, safe to re-run (intentionally of accidentally) and wont push duplicate/replacement packages.
+
 ## Usage
+
+```yaml
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1 # .ruby-version
+
+    - name: Build Gem
+      shell: bash
+      run: bundle exec rake build
+
+    - name: Setup GPR
+      uses: fac/rubygems-setup-gpr-action@v1
+      with:
+        token: ${{ secrets.github_token }}
+
+    - name: Push Gem
+      uses: fac/rubygems-push-action@v1
+```
+
+If you want to use a different gem host or key:
+
+```yaml
+    - name: Push Gem
+      uses: fac/rubygems-push-action@v1
+      env:
+         gem_host: http://gems.example.com
+         gem_host_api_key: ${{ secrets.EXAMPLE_APYI_KEY }}
+```
 
 ## Inputs
 
+### package-glob
+
+File glob to match the gem file to push. The default `pkg/*.gem` picks up gems built using `bundle exec rake build`. You may need to set this if your your gem builds another way.
+
+```yaml
+    - name: Push Gem
+      uses: fac/rubygems-push-action@v1
+      with:
+        package-glob: build/special.gem
+```
+
 ## Outputs
 
-## Secrets
+None.
 
 ## Environment Variables
 
+### GEM_HOST_API_KEY
+
+Read to get the API key string (prefixed token with Bearer), to access the package repo. Used by `gem push`.
+
+### GEM_HOST
+
+The host URL for pushing gems to.
+
 ## Authors
+
+* FreeAgent <opensource@freeagent.com>
 
 ## Licence
 
