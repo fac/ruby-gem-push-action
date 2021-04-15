@@ -8,12 +8,15 @@ If the gem version already exists in the repo the action will no-op and still se
 
 ## Usage
 
+The action expects that you have already checked out your gem and setup your ruby environment (bundle installed), such that gem and ruby commands are availiable. The easiest way to do this is using `actions/checkout` and `ruby/setup-ruby` actions with a `.ruby-version` file. See example below.
+
 ### Basic Setup
 
 Build and push all new version of the gem:
 
 ```yaml
     steps:
+    # Setup ruby environment
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1 # .ruby-version
 
