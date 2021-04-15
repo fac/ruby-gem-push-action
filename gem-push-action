@@ -27,6 +27,8 @@ if ! gem push --host "$GEM_HOST" $INPUT_PACKAGE_GLOB | tee push.out; then
     exit $gemerr
 fi
 
+echo "::set-output name=pushed-version::$( parse-gemspec --version )"
+
 if [[ $INPUT_TAG_RELEASE == true ]]; then
     tagname="v$( parse-gemspec --version )"
     git config user.name "$(git log -1 --pretty=format:%an)"

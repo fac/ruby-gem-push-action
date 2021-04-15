@@ -15,11 +15,16 @@ inputs:
   tag-release:
     description: After pushing a new gem version, git tag with the version string
     default: true
+outputs:
+  pushed-version:
+    description: "The version of the gem pushed to the repository"
+    value: ${{ steps.push-gem.outputs.pushed-version }}
 
 runs:
   using: "composite"
   steps:
     - name: Push Gem
+      id: push-gem
       shell: bash
       env:
         # Expects GEM_HOST and GEM_HOST_API_KEY to be set
