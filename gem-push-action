@@ -11,19 +11,16 @@ elif [[ $INPUT_RELEASE != true ]]; then
     exit 0
 fi
 
-# tee the output to get it in the logs but capture as we can't tell why gem
-# push failed from the exit code, so need to grep the output. Gem existing is
-# ok, other errors not. Avoids playing games setting up auth differently for
-# gem query.
+# Capture as we can't tell why gem push failed from the exit code and it logs
+# everything to stdout, so need to grep the output. Gem existing is ok, other
+# errors not. Avoids playing games setting up auth differently for gem query.
 # Note: the glob is intentially unquoted, we want a glob!
-if ! gem push --host "$GEM_HOST" $INPUT_PACKAGE_GLOB | tee push.out; then
+if ! gem push --host "$GEM_HOST" $INPUT_PACKAGE_GLOB >push.out; then
     gemerr=$?
+    sed 's/^Error:/::error::/' push.out
     if grep -q "has already been pushed" push.out; then
-    echo Gem Already Pushed
-    exit 0
+        exit 0
     fi
-    echo ::error::Gem Push Failed
-    sed 's/^/::error::/' push.out
     exit $gemerr
 fi
 
