@@ -1,6 +1,9 @@
 # CHANGELOG
 
 ## [Unreleased]
+## [1.2.0] - 2021-04-15
+
+- Change: name to ruby-gem-push-action. Old name still works due to GH redirects.
 
 ## [1.1.0] - 2021-04-15
 
