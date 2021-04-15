@@ -8,6 +8,10 @@ If the gem version already exists in the repo the action will no-op and still se
 
 ## Usage
 
+### Basic Setup
+
+Build and push all new version of the gem:
+
 ```yaml
     steps:
     - uses: actions/checkout@v2
@@ -36,6 +40,62 @@ If you want to use a different gem host or key:
          gem_host_api_key: ${{ secrets.EXAMPLE_APYI_KEY }}
 ```
 
+### Separate release and pre-release workflow
+
+You probably don't want to push all versions from any branch. More likely you would want to push release versions from your default branch (e.g. main) and pre-release from PR builds. To help with this the release and pre-release inputs can be used:
+
+```yaml
+name: Gem Build and Release
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    name: Gem / Test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+    - name: Test
+      run: bundle exec rake
+
+  release:
+    name: Gem / Release
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: ruby/setup-ruby@v1
+
+    - name: Build Gem
+      run: bundle exec rake build
+
+    - name: Setup GPR
+      uses: fac/rubygems-setup-gpr-action@v1
+      with:
+        token: ${{ secrets.github_token }}
+
+    # Release production gem version from default branch
+    - name: Push Release Gem
+      if:   github.ref == 'refs/heads/main'
+      uses: fac/rubygems-push-action@devp/v1.1.0
+
+    # PR branch builds will release pre-release gems
+    - name: Push Pre-Release Gem
+      if:   github.ref != 'refs/heads/main'
+      uses: fac/rubygems-push-action@devp/v1.1.0
+      with:
+        release: false
+        pre-release: true
+```
+
+Here we run the test on its own job, so that it gets it's own status on the PR, that you can require separately from the release job in your branch protection.
+The release job runs if the tests pass, we always package the gem to test that works. For release we use a conditional along with the actions inputs to push release versions for the main branch only and push pre-releases for PR.
+
 ## Inputs
 
 ### package-glob
@@ -49,9 +109,28 @@ File glob to match the gem file to push. The default `pkg/*.gem` picks up gems b
         package-glob: build/special.gem
 ```
 
+### release
+
+Whether to push new release versions of the gem. Defaults to true.
+
+### pre-release
+
+Whether to push new pre-release versions of the gem. Defaults to true.
+
+### tag-release
+
+When true (the default), after pushing a new gem version tag the repo with
+the version number prefixed with `v`. e.g. after pushing version `0.1.0`, the
+tag will be `v0.1.0`. This is the same behavior as `gem tag`, but internally
+implemented to work with older gem versions.
+
+The tag commit and push will be made as the author of the commit being tagged.
+
 ## Outputs
 
-None.
+### pushed-version
+
+If we pushed a gem to the repository, this will be set to the version pushed.
 
 ## Environment Variables
 
