@@ -3,11 +3,11 @@ set -e -o pipefail
 
 if parse-gemspec --is-pre-release; then
     if [[ $INPUT_PRE_RELEASE != true ]]; then
-    echo Ignoring pre-release. Set input pre-release: true, to release
+    echo "Ignoring pre-release. To release, pass pre-release: true as an input"
     exit 0
     fi
 elif [[ $INPUT_RELEASE != true ]]; then
-    echo Ignoring release. Set input release: true, to release
+    echo "Ignoring release. To release, pass release: true as an input"
     exit 0
 fi
 
