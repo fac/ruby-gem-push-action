@@ -1,6 +1,5 @@
 #!/usr/bin/env ruby
 
-require "json"
 require 'optparse'
 
 gemspecs = Dir["*.gemspec"]
@@ -18,26 +17,21 @@ end
 spec = Gem::Specification.load(gemspecs.first)
 exit 10 unless spec
 
-# json_hash = {
-#     name: spec.name,
-#     version: spec.version,
-#     isPreRelease: spec.version.prerelease?
-# }
-# puts json_hash.to_json
-
-
+def puts!(msg)
+  puts msg
+  exit
+end
 
 OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename($0)} [options]"
   opts.on("-h", "--help", "Prints this help") do
-    puts opts
-    exit
+    puts! opts
   end
   opts.on("--name", "Output gemspec name") do |v|
-    puts spec.name
+    puts! spec.name
   end
   opts.on("--version", "Output gemspec gem version") do |v|
-    puts spec.version
+    puts! spec.version
   end
   opts.on("--is-pre-release", "Exit 0 if pre-release, 1 otherwise") do |v|
     exit 0 if spec.version.prerelease?

@@ -13,7 +13,7 @@ fi
 
 # tee the output to get it in the logs but capture as we can't tell why gem
 # push failed from the exit code, so need to grep the output. Gem existing is
-# ok, other errors not. Avoids playing games setting up auth up differently for
+# ok, other errors not. Avoids playing games setting up auth differently for
 # gem query.
 # Note: the glob is intentially unquoted, we want a glob!
 if ! gem push --host "$GEM_HOST" $INPUT_PACKAGE_GLOB | tee push.out; then

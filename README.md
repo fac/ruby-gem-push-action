@@ -82,12 +82,12 @@ jobs:
     # Release production gem version from default branch
     - name: Push Release Gem
       if:   github.ref == 'refs/heads/main'
-      uses: fac/rubygems-push-action@devp/v1.1.0
+      uses: fac/rubygems-push-action@v1
 
     # PR branch builds will release pre-release gems
     - name: Push Pre-Release Gem
       if:   github.ref != 'refs/heads/main'
-      uses: fac/rubygems-push-action@devp/v1.1.0
+      uses: fac/rubygems-push-action@v1
       with:
         release: false
         pre-release: true
