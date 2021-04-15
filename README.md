@@ -2,13 +2,13 @@
 
 ## Description
 
-Action to push gems to a gem cutter compatible repository. Probably RubyGems or GitHub Package Repository. It expects the authentication to have already been setup, using the environment variables GEM_HOST and GEM_HOST_API_KEY. See [fac/rubygems-setup-gpr-action](https://github.com/fac/rubygems-setup-gpr-action) for an action to set this up for you to push to GPR.
+Action to push gems to a gem cutter compatible repository. Probably RubyGems or GitHub Packages. It expects the authentication to have already been setup, using the environment variables GEM_HOST and GEM_HOST_API_KEY. See [fac/ruby-gem-setup-github-packages-action](https://github.com/fac/ruby-gem-setup-github-packages-action) for an action to set this up for you to push to GitHub.
 
-If the gem version already exists in the repo the action will no-op and still set a success status. This makes it easier to integrate into workflows, safe to re-run (intentionally of accidentally) and wont push duplicate/replacement packages.
+If the gem version already exists in the repo the action will no-op and still set a success status. This makes it easier to integrate into workflows, safe to re-run (intentionally or accidentally) and wont push duplicate/replacement packages.
 
 ## Usage
 
-The action expects that you have already checked out your gem and setup your ruby environment (bundle installed), such that gem and ruby commands are availiable. The easiest way to do this is using `actions/checkout` and `ruby/setup-ruby` actions with a `.ruby-version` file. See example below.
+The action expects that you have already checked out your gem and setup your ruby environment (bundle installed), such that gem and ruby commands are available. The easiest way to do this is using `actions/checkout` and `ruby/setup-ruby` actions with a `.ruby-version` file. See example below.
 
 ### Basic Setup
 
@@ -19,28 +19,30 @@ Build and push all new version of the gem:
     # Setup ruby environment
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1 # .ruby-version
+      with:
+        bundler-cache: true # bundle install and cache
 
     - name: Build Gem
       shell: bash
       run: bundle exec rake build
 
     - name: Setup GPR
-      uses: fac/rubygems-setup-gpr-action@v1
+      uses: fac/ruby-gem-setup-github-packages-action@v1
       with:
         token: ${{ secrets.github_token }}
 
     - name: Push Gem
-      uses: fac/rubygems-push-action@v1
+      uses: fac/ruby-gem-push-action@v1
 ```
 
 If you want to use a different gem host or key:
 
 ```yaml
     - name: Push Gem
-      uses: fac/rubygems-push-action@v1
+      uses: fac/ruby-gem-push-action@v1
       env:
          gem_host: http://gems.example.com
-         gem_host_api_key: ${{ secrets.EXAMPLE_APYI_KEY }}
+         gem_host_api_key: ${{ secrets.EXAMPLE_API_KEY }}
 ```
 
 ### Separate release and pre-release workflow
@@ -78,19 +80,19 @@ jobs:
       run: bundle exec rake build
 
     - name: Setup GPR
-      uses: fac/rubygems-setup-gpr-action@v1
+      uses: fac/ruby-gem-setup-github-packages-action@v1
       with:
         token: ${{ secrets.github_token }}
 
     # Release production gem version from default branch
     - name: Push Release Gem
       if:   github.ref == 'refs/heads/main'
-      uses: fac/rubygems-push-action@v1
+      uses: fac/ruby-gem-push-action@v1
 
     # PR branch builds will release pre-release gems
     - name: Push Pre-Release Gem
       if:   github.ref != 'refs/heads/main'
-      uses: fac/rubygems-push-action@v1
+      uses: fac/ruby-gem-push-action@v1
       with:
         release: false
         pre-release: true
@@ -107,7 +109,7 @@ File glob to match the gem file to push. The default `pkg/*.gem` picks up gems b
 
 ```yaml
     - name: Push Gem
-      uses: fac/rubygems-push-action@v1
+      uses: fac/ruby-gem-push-action@v1
       with:
         package-glob: build/special.gem
 ```
