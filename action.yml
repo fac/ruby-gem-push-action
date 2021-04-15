@@ -23,39 +23,10 @@ runs:
       shell: bash
       env:
         # Expects GEM_HOST and GEM_HOST_API_KEY to be set
-        GEM_GLOB: ${{ inputs.package-glob }}
-        ACTION_PATH: ${{ github.action_path }}
+        INPUT_PACKAGE_GLOB: ${{ inputs.package-glob }}
         INPUT_RELEASE: ${{ inputs.release }}
         INPUT_PRE_RELEASE: ${{ inputs.pre-release }}
         INPUT_TAG_RELEASE: ${{ inputs.tag-release }}
       run: |
-        PATH="$ACTION_PATH:$PATH"
-
-        if parse-gemspec --is-pre-release; then
-          if [[ $INPUT_PRE_RELEASE != true ]]; then
-            echo Ignoring pre-release. Set input pre-release: true, to release
-            exit 0
-          fi
-        elif [[ $INPUT_RELEASE != true ]]; then
-          echo Ignoring release. Set input release: true, to release
-          exit 0
-        fi
-
-        if ! gem push --host "$GEM_HOST" $GEM_GLOB | tee push.out; then
-          gemerr=$?
-          if grep -q "has already been pushed" push.out; then
-            echo Gem Already Pushed
-            exit 0
-          fi
-          echo ::error::Gem Push Failed
-          cat push.out | sed 's/^/::error::/'
-          exit $gemerr
-        fi
-
-        if [[ $INPUT_TAG_RELEASE == true ]]; then
-          tagname="v$( parse-gemspec --version )"
-          git tag -a -m "Gem release $tagname" $tagname
-          git push origin $tagname
-        fi
-
-        exit 0
+        PATH="${{ github.action_path }}:$PATH"
+        gem-push-action
