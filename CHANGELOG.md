@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-## [maj.min.rev] - YYY-MM-DD
+## [1.0.0] - 2021-04-15
+
+- Add basic action that pushes gems to the repository
 
 ----
 
