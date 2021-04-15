@@ -1,29 +1,37 @@
 # See: https://docs.github.com/en/actions/creating-actions
 name: Gem Push
 author: FreeAgent
-description: Push gem packages to a rubygems compatible repo
+description: Push gem packages to a rubygems compatible repository
 inputs:
   package-glob:
-    description: "File glob to match the .gem files to push"
+    description: File glob to match the .gem files to push
     default: "pkg/*.gem"
+  release:
+    description: Whether to push release versions
+    default: true
+  pre-release:
+    description: Whether to push pre-release versions
+    default: true
+  tag-release:
+    description: After pushing a new gem version, git tag with the version string
+    default: true
+outputs:
+  pushed-version:
+    description: "The version of the gem pushed to the repository"
+    value: ${{ steps.push-gem.outputs.pushed-version }}
 
 runs:
   using: "composite"
   steps:
     - name: Push Gem
+      id: push-gem
       shell: bash
       env:
         # Expects GEM_HOST and GEM_HOST_API_KEY to be set
-        GEM_GLOB: ${{ inputs.package-glob }}
+        INPUT_PACKAGE_GLOB: ${{ inputs.package-glob }}
+        INPUT_RELEASE: ${{ inputs.release }}
+        INPUT_PRE_RELEASE: ${{ inputs.pre-release }}
+        INPUT_TAG_RELEASE: ${{ inputs.tag-release }}
       run: |
-        if ! gem push --host "$GEM_HOST" $GEM_GLOB | tee push.out; then
-          gemerr=$?
-          if grep "has already been pushed" push.out; then
-            echo Gem Already Pushed
-            exit 0
-          fi
-          echo ::error::Gem Push Failed
-          cat push.out | sed 's/^/::error::/'
-          exit $gemerr
-        fi
-        exit 0
+        PATH="${{ github.action_path }}:$PATH"
+        gem-push-action

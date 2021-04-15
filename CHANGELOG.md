@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [1.1.0] - 2021-04-15
+
+- Add: input release: Whether to push release versions
+- Add: input pre-release: Whether to push pre-release versions
+- Add: input tag-release: After pushing a new gem version, git tag with the version string
+- Add: output pushed-version: the version of the gem pushed to the repository
+
 ## [1.0.0] - 2021-04-15
 
 - Add basic action that pushes gems to the repository
