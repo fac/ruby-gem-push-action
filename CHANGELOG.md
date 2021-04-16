@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ## [Unreleased]
-## [1.2.0] - 2021-04-15
+## [1.3.0] - 2021-04-16
 
 - Fix: clean shell log handling for `gem push` call
 
