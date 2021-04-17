@@ -1,6 +1,11 @@
 #!/usr/bin/bash 
 set -e -o pipefail
 
+# By default read the gem host from the gemspec, if they dont match the push
+# will fail! Allow override if GEM_HOST is already exported.
+push_host="$(parse-gemspec --push-host)"
+export GEM_HOST="${GEM_HOST:-$push_host}"
+
 if parse-gemspec --is-pre-release; then
     if [[ $INPUT_PRE_RELEASE != true ]]; then
     echo "Ignoring pre-release. To release, pass pre-release: true as an input"

@@ -24,15 +24,15 @@ end
 
 OptionParser.new do |opts|
   opts.banner = "Usage: #{File.basename($0)} [options]"
-  opts.on("-h", "--help", "Prints this help") do
-    puts! opts
+  opts.on("-h", "--help", "Prints this help") do puts! opts end
+
+  opts.on("--name",      "Output name")        do |v| puts! spec.name end
+  opts.on("--version",   "Output gem version") do |v| puts! spec.version end
+  opts.on("--metadata",  "Output metadata")    do |v| puts! spec.metadata end
+  opts.on("--push-host", "Output metadata.allowed_push_host") do |v|
+    puts! spec.metadata.dig "allowed_push_host"
   end
-  opts.on("--name", "Output gemspec name") do |v|
-    puts! spec.name
-  end
-  opts.on("--version", "Output gemspec gem version") do |v|
-    puts! spec.version
-  end
+
   opts.on("--is-pre-release", "Exit 0 if pre-release, 1 otherwise") do |v|
     exit 0 if spec.version.prerelease?
     exit 1
