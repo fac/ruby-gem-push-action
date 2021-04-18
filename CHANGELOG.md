@@ -1,5 +1,7 @@
 # CHANGELOG
 
+TODO: v2 changes
+
 ## [Unreleased]
 ## [1.3.0] - 2021-04-16
 

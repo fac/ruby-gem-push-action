@@ -2,9 +2,11 @@
 
 ## Description
 
-Action to push gems to a gem cutter compatible repository. Probably RubyGems or GitHub Packages. It expects the authentication to have already been setup, using the environment variables GEM_HOST and GEM_HOST_API_KEY. See [fac/ruby-gem-setup-github-packages-action](https://github.com/fac/ruby-gem-setup-github-packages-action) for an action to set this up for you to push to GitHub.
+Action to push gems to a gem cutter compatible repository. Basically RubyGems or GitHub Packages. It expects the authentication to have already been setup, `~/.gem/credentials` contains a token for the repo and you know the name of the key.
+See [fac/ruby-gem-setup-github-packages-action](https://github.com/fac/ruby-gem-setup-github-packages-action) for an action to set this up for you. It is actually pretty easy if pushing to the same repo.
 
 If the gem version already exists in the repo the action will no-op and still set a success status. This makes it easier to integrate into workflows, safe to re-run (intentionally or accidentally) and wont push duplicate/replacement packages.
+It will still raise an error visible in the summary, letting you know the version already exists.
 
 ## Usage
 
@@ -16,38 +18,29 @@ Build and push all new version of the gem:
 
 ```yaml
     steps:
-    # Setup ruby environment
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1 # .ruby-version
       with:
-        bundler-cache: true # bundle install and cache
+        bundler-cache: true    # bundle install
+    - run: bundle exec rake build
 
-    - name: Build Gem
-      shell: bash
-      run: bundle exec rake build
-
-    - name: Setup GPR
-      uses: fac/ruby-gem-setup-github-packages-action@v1
+    - uses: fac/ruby-gem-setup-github-packages-action@v2
       with:
         token: ${{ secrets.github_token }}
 
-    - name: Push Gem
-      uses: fac/ruby-gem-push-action@v1
+    - uses: fac/ruby-gem-push-action@v2
+      with:
+        key: github
 ```
 
-If you want to use a different gem host or key:
-
-```yaml
-    - name: Push Gem
-      uses: fac/ruby-gem-push-action@v1
-      env:
-         gem_host: http://gems.example.com
-         gem_host_api_key: ${{ secrets.EXAMPLE_API_KEY }}
-```
+Note, that the ruby-gem-push-action, will push to the host given in the gemspec. The token needs to match. Trying to push to a different host will fail.
 
 ### Separate release and pre-release workflow
 
-You probably don't want to push all versions from any branch. More likely you would want to push release versions from your default branch (e.g. main) and pre-release from PR builds. To help with this the release and pre-release inputs can be used:
+
+By the default, the action releases, (er!) release versions, that is, non pre-release versions, those are skipped over with a message. Setting the input `pre-release: true`, reverses that, releasing new pre-release versions and skipping over live releases. That way, you can have 2 calls to the action, using the workflow to decide the logic.
+
+Say you want to push release versions from your default branch (main) and pre-release versions from PR builds:
 
 ```yaml
 name: Gem Build and Release
@@ -69,32 +62,32 @@ jobs:
 
   release:
     name: Gem / Release
-    needs: test
+    needs: test         # Only release IF the tests pass
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
+    - run: bundle exec rake build
 
-    - name: Build Gem
-      run: bundle exec rake build
-
-    - name: Setup GPR
-      uses: fac/ruby-gem-setup-github-packages-action@v1
+    # Setup repo auth
+    - uses: fac/ruby-gem-setup-github-packages-action@v2
       with:
         token: ${{ secrets.github_token }}
 
     # Release production gem version from default branch
-    - name: Push Release Gem
+    - name: Release Gem
       if:   github.ref == 'refs/heads/main'
-      uses: fac/ruby-gem-push-action@v1
+      uses: fac/ruby-gem-push-action@v2
+      with:
+        key: github
 
     # PR branch builds will release pre-release gems
-    - name: Push Pre-Release Gem
+    - name: Pre-Release Gem
       if:   github.ref != 'refs/heads/main'
-      uses: fac/ruby-gem-push-action@v1
+      uses: fac/ruby-gem-push-action@v2
       with:
-        release: false
+        key: github
         pre-release: true
 ```
 
@@ -103,7 +96,7 @@ The release job runs if the tests pass, we always package the gem to test that w
 
 ## Inputs
 
-### package-glob
+### gem-glob
 
 File glob to match the gem file to push. The default `pkg/*.gem` picks up gems built using `bundle exec rake build`. You may need to set this if your your gem builds another way.
 
@@ -111,23 +104,18 @@ File glob to match the gem file to push. The default `pkg/*.gem` picks up gems b
     - name: Push Gem
       uses: fac/ruby-gem-push-action@v1
       with:
-        package-glob: build/special.gem
+        gem-glob: build/special.gem
 ```
-
-### release
-
-Whether to push new release versions of the gem. Defaults to true.
-
 ### pre-release
 
-Whether to push new pre-release versions of the gem. Defaults to true.
+Whether to push new pre-release versions of the gem and ignore releases, instead of the normal, push prod releases but ignore pre-release.
 
-### tag-release
+### tag
 
 When true (the default), after pushing a new gem version tag the repo with
 the version number prefixed with `v`. e.g. after pushing version `0.1.0`, the
-tag will be `v0.1.0`. This is the same behavior as `gem tag`, but internally
-implemented to work with older gem versions.
+tag will be `v0.1.0`. This is the same behavior as `gem tag`. (Internally
+implemented to work with older gem versions and around bugs that caused tags for failed pushes, which then blocked re-pushing.
 
 The tag commit and push will be made as the author of the commit being tagged.
 
@@ -139,14 +127,7 @@ If we pushed a gem to the repository, this will be set to the version pushed.
 
 ## Environment Variables
 
-### GEM_HOST_API_KEY
-
-Read to get the API key string (prefixed token with Bearer), to access the package repo. Used by `gem push`.
-
-### GEM_HOST
-
-The host URL for pushing gems to.
-
+None.
 ## Authors
 
 * FreeAgent <opensource@freeagent.com>
