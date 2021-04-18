@@ -9,12 +9,9 @@ inputs:
   package-glob:
     description: File glob to match the .gem files to push
     default: "pkg/*.gem"
-  release:
-    description: Whether to push release versions
-    default: true
   pre-release:
-    description: Whether to push pre-release versions
-    default: true
+    description: Whether to push pre-release versions, instead of release versions (the default).
+    default: false
   tag-release:
     description: After pushing a new gem version, git tag with the version string
     default: true
@@ -31,11 +28,9 @@ runs:
       shell: bash
       env:
         # Expects GEM_HOST and GEM_HOST_API_KEY to be set
-        INPUT_PACKAGE_GLOB: ${{ inputs.package-glob }}
-        INPUT_RELEASE:      ${{ inputs.release }}
         INPUT_PRE_RELEASE:  ${{ inputs.pre-release }}
         INPUT_TAG_RELEASE:  ${{ inputs.tag-release }}
         INPUT_KEY:          ${{ inputs.key }}
       run: |
         PATH="${{ github.action_path }}:$PATH"
-        gem-push-action
+        gem-push-action ${{ inputs.package-glob }}
