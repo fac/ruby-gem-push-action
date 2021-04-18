@@ -26,11 +26,8 @@ runs:
     - name: Push Gem
       id: push-gem
       shell: bash
-      env:
-        # Expects GEM_HOST and GEM_HOST_API_KEY to be set
-        INPUT_PRE_RELEASE:  ${{ inputs.pre-release }}
-        INPUT_TAG_RELEASE:  ${{ inputs.tag-release }}
-        INPUT_KEY:          ${{ inputs.key }}
       run: |
-        PATH="${{ github.action_path }}:$PATH"
-        gem-push-action ${{ inputs.package-glob }}
+        #PATH="${{ github.action_path }}:$PATH"
+        args=""
+        '${{ inputs.tag-release }}' && args="$args -t" 
+        gem-push-action -k "${{inputs.key}}" $args ${{ inputs.package-glob }}

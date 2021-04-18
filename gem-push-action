@@ -1,5 +1,41 @@
-#!/usr/bin/bash 
+#!/usr/bin/env bash
 set -e -o pipefail
+
+# Get access to ./parse-gemspec and be callable from anywhere
+SRCDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &>/dev/null && pwd )"
+PATH="$SRCDIR:$PATH"
+
+KEY=""
+PRE_RELEASE=false
+TAG_RELEASE=false
+
+usage() {
+  echo "Usage: $0 [-k KEY] [-p] GEMFILE"
+  echo
+  echo Options:
+  echo "  GEMFILE  The pre-built .gem pkg you want to push"
+  echo "  -k KEY   Set the gem host credentials key name. Default: '$KEY'"
+  echo "  -p       Do a pre-release, ignore otherwise. Default: $PRE_RELEASE"
+  echo "  -t       After pushing a new version, git tag the current ref. Default: $TAG_RELEASE"
+  echo "  -h       Show this help"
+  exit 0
+}
+
+while getopts ":hk:pt" opt; do
+  case ${opt} in
+    h ) usage
+      ;;
+    k ) KEY=$OPTARG
+      ;;
+    p ) PRE_RELEASE=true
+      ;;
+    t ) TAG_RELEASE=true
+      ;;
+    \? ) usage
+      ;;
+  esac
+done
+shift $((OPTIND -1))
 
 GEM_FILE="$1"
 
@@ -8,7 +44,7 @@ GEM_FILE="$1"
 push_host="$(parse-gemspec --push-host)"
 GEM_HOST="${GEM_HOST:-$push_host}"
 
-if parse-gemspec --is-pre-release && [[ $INPUT_PRE_RELEASE != true ]];
+if parse-gemspec --is-pre-release && [[ $PRE_RELEASE != true ]];
 then
     echo "Ignoring pre-release. To release, pass pre-release: true as an input"
     exit 0
@@ -17,7 +53,7 @@ fi
 # Capture as we can't tell why gem push failed from the exit code and it logs
 # everything to stdout, so need to grep the output. Gem existing is ok, other
 # errors not. Avoids playing games setting up auth differently for gem query.
-if ! gem push --key="$INPUT_KEY" --host "$GEM_HOST" "$GEM_FILE" >push.out; then
+if ! gem push --key="$KEY" --host "$GEM_HOST" "$GEM_FILE" >push.out; then
     gemerr=$?
     sed 's/^Error:/::error::/' push.out
     if grep -q "has already been pushed" push.out; then
@@ -28,7 +64,7 @@ fi
 
 echo "::set-output name=pushed-version::$( parse-gemspec --version )"
 
-if [[ $INPUT_TAG_RELEASE == true ]]; then
+if [[ $TAG_RELEASE == true ]]; then
     tagname="v$( parse-gemspec --version )"
     git config user.name "$(git log -1 --pretty=format:%an)"
     git config user.email "$(git log -1 --pretty=format:%ae)"
