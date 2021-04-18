@@ -3,6 +3,9 @@ name: Gem Push
 author: FreeAgent
 description: Push gem packages to a rubygems compatible repository
 inputs:
+  key:
+    description: "Name of credentials key to use from ~/.gem/credentials. Use github for gh packages."
+    default: ""
   package-glob:
     description: File glob to match the .gem files to push
     default: "pkg/*.gem"
@@ -15,9 +18,6 @@ inputs:
   tag-release:
     description: After pushing a new gem version, git tag with the version string
     default: true
-  key-name:
-    description: "Name of credentials key to use from ~/.gem/credentials. Use github for gh packages."
-    default: ""
 outputs:
   pushed-version:
     description: "The version of the gem pushed to the repository"
@@ -35,7 +35,7 @@ runs:
         INPUT_RELEASE:      ${{ inputs.release }}
         INPUT_PRE_RELEASE:  ${{ inputs.pre-release }}
         INPUT_TAG_RELEASE:  ${{ inputs.tag-release }}
-        INPUT_KEY_NAME:     ${{ inputs.key-name }}
+        INPUT_KEY:          ${{ inputs.key }}
       run: |
         PATH="${{ github.action_path }}:$PATH"
         gem-push-action

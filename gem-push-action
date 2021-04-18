@@ -20,7 +20,7 @@ fi
 # everything to stdout, so need to grep the output. Gem existing is ok, other
 # errors not. Avoids playing games setting up auth differently for gem query.
 # Note: the glob is intentially unquoted, we want a glob!
-if ! gem push --key="$INPUT_KEY_NAME" --host "$GEM_HOST" $INPUT_PACKAGE_GLOB >push.out; then
+if ! gem push --key="$INPUT_KEY" --host "$GEM_HOST" $INPUT_PACKAGE_GLOB >push.out; then
     gemerr=$?
     sed 's/^Error:/::error::/' push.out
     if grep -q "has already been pushed" push.out; then
