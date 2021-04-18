@@ -6,13 +6,13 @@ inputs:
   key:
     description: "Name of credentials key to use from ~/.gem/credentials. Use github for gh packages."
     default: ""
-  package-glob:
+  gem-glob:
     description: File glob to match the .gem files to push
     default: "pkg/*.gem"
   pre-release:
     description: Whether to push pre-release versions, instead of release versions (the default).
     default: false
-  tag-release:
+  tag:
     description: After pushing a new gem version, git tag with the version string
     default: true
 outputs:
@@ -27,7 +27,7 @@ runs:
       id: push-gem
       shell: bash
       run: |
-        #PATH="${{ github.action_path }}:$PATH"
+        PATH="${{ github.action_path }}:$PATH"
         args=""
-        '${{ inputs.tag-release }}' && args="$args -t" 
-        gem-push-action -k "${{inputs.key}}" $args ${{ inputs.package-glob }}
+        '${{ inputs.tag }}' && args="$args -t"
+        gem-push-action -k "${{inputs.key}}" $args ${{inputs.gem-glob}}
