@@ -1,6 +1,19 @@
 # CHANGELOG
 
+TODO: v2 changes
+
 ## [Unreleased]
+
+## [2.0.0] - 2021-04-26
+
+- Change: Don't pass the gem host around as an environment variable, extract from the gemspec.
+- Change: Don't pass gem keys around in environment variables anymore. Use the installed creds by key name.
+- Add: input `key` to set the key name in gem credentials to use.
+- Change: Release/pre-release inputs collapsed into single pre-release input. Push is either release or pre-release version, can't do both (or none!) in the same call anymore.
+- Add: Add linter for action code.
+- Change: `tag-release` input renamed to just `tag`.
+- Change: Use command line args instead of env variables for the internal command.
+
 ## [1.3.0] - 2021-04-16
 
 - Fix: clean shell log handling for `gem push` call

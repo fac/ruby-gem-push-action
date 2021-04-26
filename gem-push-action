@@ -1,21 +1,55 @@
-#!/usr/bin/bash 
+#!/usr/bin/env bash
 set -e -o pipefail
 
-if parse-gemspec --is-pre-release; then
-    if [[ $INPUT_PRE_RELEASE != true ]]; then
+KEY=""
+PRE_RELEASE=false
+TAG_RELEASE=false
+
+usage() {
+  echo "Usage: $0 [-k KEY] [-p] GEMFILE"
+  echo
+  echo Options:
+  echo "  GEMFILE  The pre-built .gem pkg you want to push"
+  echo "  -k KEY   Set the gem host credentials key name. Default: '$KEY'"
+  echo "  -p       Do a pre-release, ignore otherwise. Default: $PRE_RELEASE"
+  echo "  -t       After pushing a new version, git tag the current ref. Default: $TAG_RELEASE"
+  echo "  -h       Show this help"
+  exit 0
+}
+
+while getopts ":hk:pt" opt; do
+  case ${opt} in
+    h ) usage
+      ;;
+    k ) KEY=$OPTARG
+      ;;
+    p ) PRE_RELEASE=true
+      ;;
+    t ) TAG_RELEASE=true
+      ;;
+    \? ) usage
+      ;;
+  esac
+done
+shift $((OPTIND -1))
+
+GEM_FILE="$1"
+
+# By default read the gem host from the gemspec, if they dont match the push
+# will fail! Allow override if GEM_HOST is already exported.
+push_host="$(parse-gemspec --push-host)"
+GEM_HOST="${GEM_HOST:-$push_host}"
+
+if parse-gemspec --is-pre-release && [[ $PRE_RELEASE != true ]];
+then
     echo "Ignoring pre-release. To release, pass pre-release: true as an input"
-    exit 0
-    fi
-elif [[ $INPUT_RELEASE != true ]]; then
-    echo "Ignoring release. To release, pass release: true as an input"
     exit 0
 fi
 
 # Capture as we can't tell why gem push failed from the exit code and it logs
 # everything to stdout, so need to grep the output. Gem existing is ok, other
 # errors not. Avoids playing games setting up auth differently for gem query.
-# Note: the glob is intentially unquoted, we want a glob!
-if ! gem push --host "$GEM_HOST" $INPUT_PACKAGE_GLOB >push.out; then
+if ! gem push --key="$KEY" --host "$GEM_HOST" "$GEM_FILE" >push.out; then
     gemerr=$?
     sed 's/^Error:/::error::/' push.out
     if grep -q "has already been pushed" push.out; then
@@ -26,7 +60,7 @@ fi
 
 echo "::set-output name=pushed-version::$( parse-gemspec --version )"
 
-if [[ $INPUT_TAG_RELEASE == true ]]; then
+if [[ $TAG_RELEASE == true ]]; then
     tagname="v$( parse-gemspec --version )"
     git config user.name "$(git log -1 --pretty=format:%an)"
     git config user.email "$(git log -1 --pretty=format:%ae)"

@@ -3,16 +3,16 @@ name: Gem Push
 author: FreeAgent
 description: Push gem packages to a rubygems compatible repository
 inputs:
-  package-glob:
+  key:
+    description: "Name of credentials key to use from ~/.gem/credentials."
+    default: ""
+  gem-glob:
     description: File glob to match the .gem files to push
     default: "pkg/*.gem"
-  release:
-    description: Whether to push release versions
-    default: true
   pre-release:
-    description: Whether to push pre-release versions
-    default: true
-  tag-release:
+    description: Whether to push pre-release versions, instead of release versions (the default).
+    default: false
+  tag:
     description: After pushing a new gem version, git tag with the version string
     default: true
 outputs:
@@ -26,12 +26,8 @@ runs:
     - name: Push Gem
       id: push-gem
       shell: bash
-      env:
-        # Expects GEM_HOST and GEM_HOST_API_KEY to be set
-        INPUT_PACKAGE_GLOB: ${{ inputs.package-glob }}
-        INPUT_RELEASE: ${{ inputs.release }}
-        INPUT_PRE_RELEASE: ${{ inputs.pre-release }}
-        INPUT_TAG_RELEASE: ${{ inputs.tag-release }}
       run: |
         PATH="${{ github.action_path }}:$PATH"
-        gem-push-action
+        args=""
+        [ '${{ inputs.tag }}' == true ] && args="$args -t"
+        gem-push-action -k "${{inputs.key}}" $args ${{inputs.gem-glob}}
