@@ -4,6 +4,10 @@ TODO: v2 changes
 
 ## [Unreleased]
 
+## [2.0.1] - 2021-04-26
+
+- Update: README to show usage with renamed `ruby-gem-setup-credentials@v2`
+
 ## [2.0.0] - 2021-04-26
 
 - Change: Don't pass the gem host around as an environment variable, extract from the gemspec.
