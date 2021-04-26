@@ -33,12 +33,11 @@ Build and push all new version of the gem:
         key: github
 ```
 
-Note, that the ruby-gem-push-action, will push to the host given in the gemspec. The token needs to match. Trying to push to a different host will fail.
+Note that the ruby-gem-push-action will push to the host given in the gemspec. The token needs to match. Trying to push to a different host will fail.
 
 ### Separate release and pre-release workflow
 
-
-By the default, the action releases, (er!) release versions, that is, non pre-release versions, those are skipped over with a message. Setting the input `pre-release: true`, reverses that, releasing new pre-release versions and skipping over live releases. That way, you can have 2 calls to the action, using the workflow to decide the logic.
+By default, the action only acts on non-pre-release versions, and prints a message if it thinks the gem has a pre-release version number. If you set the input option `pre-release: true`, then it will only act on pre-release versions, and will skip over regular versions. That way, you can have 2 calls to the action, using the workflow to decide the logic.
 
 Say you want to push release versions from your default branch (main) and pre-release versions from PR builds:
 
