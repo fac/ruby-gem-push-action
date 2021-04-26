@@ -3,7 +3,7 @@
 ## Description
 
 Action to push gems to a gem cutter compatible repository. Basically RubyGems or GitHub Packages. It expects the authentication to have already been setup, `~/.gem/credentials` contains a token for the repo and you know the name of the key.
-See [fac/ruby-gem-setup-github-packages-action](https://github.com/fac/ruby-gem-setup-github-packages-action) for an action to set this up for you. It is actually pretty easy if pushing to the same repo.
+See [fac/ruby-gem-credentials-action](https://github.com/fac/ruby-gem-credentials-action) for an action to set this up for you. It is actually pretty easy if pushing to the same repo.
 
 If the gem version already exists in the repo the action will no-op and still set a success status. This makes it easier to integrate into workflows, safe to re-run (intentionally or accidentally) and wont push duplicate/replacement packages.
 It will still raise an error visible in the summary, letting you know the version already exists.
@@ -22,9 +22,10 @@ Build and push all new version of the gem:
     - uses: ruby/setup-ruby@v1 # .ruby-version
       with:
         bundler-cache: true    # bundle install
+
     - run: bundle exec rake build
 
-    - uses: fac/ruby-gem-setup-github-packages-action@v2
+    - uses: fac/ruby-gem-setup-credentials-action@v2
       with:
         token: ${{ secrets.github_token }}
 
@@ -67,12 +68,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: ruby/setup-ruby@v1
-    - run: bundle exec rake build
-
-    # Setup repo auth
-    - uses: fac/ruby-gem-setup-github-packages-action@v2
+    - uses: fac/ruby-gem-setup-credentials-action@v2
       with:
         token: ${{ secrets.github_token }}
+
+    - name: Build Gem
+      run: bundle exec rake build
 
     # Release production gem version from default branch
     - name: Release Gem
