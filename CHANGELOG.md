@@ -4,6 +4,10 @@ TODO: v2 changes
 
 ## [Unreleased]
 
+## [2.1.0] - 2021-04-30
+
+- Fix: Bug with pre-release input getting ignored
+
 ## [2.0.1] - 2021-04-26
 
 - Update: README to show usage with renamed `ruby-gem-setup-credentials@v2`
