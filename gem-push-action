@@ -40,10 +40,16 @@ GEM_FILE="$1"
 push_host="$(parse-gemspec --push-host)"
 GEM_HOST="${GEM_HOST:-$push_host}"
 
-if parse-gemspec --is-pre-release && [[ $PRE_RELEASE != true ]];
-then
+if parse-gemspec --is-pre-release; then
+  if [[ $PRE_RELEASE != true ]]; then
     echo "Ignoring pre-release. To release, pass pre-release: true as an input"
     exit 0
+  fi
+else # normal release
+  if [[ $PRE_RELEASE == true ]]; then
+    echo "Ignoring release. To release, pass pre-release: false as an input"
+    exit 0
+  fi
 fi
 
 # Capture as we can't tell why gem push failed from the exit code and it logs
