@@ -3,6 +3,9 @@
 TODO: v2 changes
 
 ## [Unreleased]
+## [2.2.0] - 2021-04-30
+
+- Fix: Bug with pre-release:false input getting ignored
 
 ## [2.1.0] - 2021-04-30
 
