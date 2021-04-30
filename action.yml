@@ -29,5 +29,6 @@ runs:
       run: |
         PATH="${{ github.action_path }}:$PATH"
         args=""
+        [ '${{ inputs.pre-release }}' == true ] && args="$args -p"
         [ '${{ inputs.tag }}' == true ] && args="$args -t"
         gem-push-action -k "${{inputs.key}}" $args ${{inputs.gem-glob}}
