@@ -63,11 +63,14 @@ if ! gem push --key="$KEY" --host "$GEM_HOST" "$GEM_FILE" >push.out; then
     fi
     exit $gemerr
 fi
+cat push.out
 
-echo "::set-output name=pushed-version::$( parse-gemspec --version )"
+VERSION="$( parse-gemspec --version )"
+echo "::set-output name=pushed-version::$VERSION"
+echo "Published $VERSION"
 
 if [[ $TAG_RELEASE == true ]]; then
-    tagname="v$( parse-gemspec --version )"
+    tagname="v$VERSION"
     git config user.name "$(git log -1 --pretty=format:%an)"
     git config user.email "$(git log -1 --pretty=format:%ae)"
     git tag -a -m "Gem release $tagname" "$tagname"
