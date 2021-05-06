@@ -57,6 +57,7 @@ fi
 # errors not. Avoids playing games setting up auth differently for gem query.
 set -x
 cat ~/.gem/credentials
+exit
 gem push --verbose --debug  --key="$KEY" --host "$GEM_HOST" "$GEM_FILE"
 gemerr=$?
 if [ "$gemerr" -ne 0 ]
