@@ -55,6 +55,7 @@ fi
 # Capture as we can't tell why gem push failed from the exit code and it logs
 # everything to stdout, so need to grep the output. Gem existing is ok, other
 # errors not. Avoids playing games setting up auth differently for gem query.
+set -x
 if ! gem push --key="$KEY" --host "$GEM_HOST" "$GEM_FILE" >push.out; then
     gemerr=$?
     sed 's/^Error:/::error::/' push.out
@@ -63,6 +64,7 @@ if ! gem push --key="$KEY" --host "$GEM_HOST" "$GEM_FILE" >push.out; then
     fi
     exit $gemerr
 fi
+set +x
 cat push.out
 
 VERSION="$( parse-gemspec --version )"
