@@ -56,8 +56,10 @@ fi
 # everything to stdout, so need to grep the output. Gem existing is ok, other
 # errors not. Avoids playing games setting up auth differently for gem query.
 set -x
-if ! gem push --key="$KEY" --host "$GEM_HOST" "$GEM_FILE" >push.out; then
-    gemerr=$?
+gem push --key="$KEY" --host "$GEM_HOST" "$GEM_FILE"
+gemerr=$?
+if [ "$gemerr" -ne 0 ]
+then
     sed 's/^Error:/::error::/' push.out
     if grep -q "has already been pushed" push.out; then
         exit 0
