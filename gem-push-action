@@ -43,7 +43,7 @@ GEM_HOST="${GEM_HOST:-$push_host}"
 # test GEM_HOST, gem silently fails with no error if the GEM_HOST redirects
 # see https://github.com/rubygems/rubygems/issues/4458
 test_response_code=$(curl --silent --output /dev/null --write-out "%{http_code}" --request POST "$GEM_HOST/api/v1/gems")
-if [ $test_response_code != 401 ] # expecting an 'authentication required' response
+if [[ $test_response_code != 401 ]] # expecting an 'authentication required' response
 then
   echo "::error::Push host looks malformed! Got response of $test_response_code when requesting $GEM_HOST/api/vi/gems" >&2
   echo "::error::Check for HTTPS scheme & no trailing slashes on your allowed push host ($push_host)" >&2
