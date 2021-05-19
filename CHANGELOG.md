@@ -3,6 +3,11 @@
 TODO: v2 changes
 
 ## [Unreleased]
+
+## [2.3.0] - 2021-05-19
+
+- Add: explicit preflight check on the push host, to work around gem failing successfully on malformed push hosts
+
 ## [2.2.0] - 2021-04-30
 
 - Fix: Bug with pre-release:false input getting ignored

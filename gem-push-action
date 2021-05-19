@@ -40,6 +40,16 @@ GEM_FILE="$1"
 push_host="$(parse-gemspec --push-host)"
 GEM_HOST="${GEM_HOST:-$push_host}"
 
+# test GEM_HOST, gem silently fails with no error if the GEM_HOST redirects
+# see https://github.com/rubygems/rubygems/issues/4458
+test_response_code=$(curl --silent --output /dev/null --write-out "%{http_code}" --request POST "$GEM_HOST/api/v1/gems")
+if [[ $test_response_code != 401 ]] # expecting an 'authentication required' response
+then
+  echo "::error::Push host looks malformed! Got response of $test_response_code when requesting $GEM_HOST/api/vi/gems" >&2
+  echo "::error::Check for HTTPS scheme & no trailing slashes on your allowed push host ($push_host)" >&2
+  exit 1
+fi
+
 if parse-gemspec --is-pre-release; then
   if [[ $PRE_RELEASE != true ]]; then
     echo "Ignoring pre-release. To release, pass pre-release: true as an input"
