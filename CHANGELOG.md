@@ -4,6 +4,10 @@ TODO: v2 changes
 
 ## [Unreleased]
 
+## [2.4.0] - 2021-07-20
+
+- Add: support for `ACTIONS_STEP_DEBUG` to see what the push script is doing
+
 ## [2.3.0] - 2021-05-19
 
 - Add: explicit preflight check on the push host, to work around gem failing successfully on malformed push hosts

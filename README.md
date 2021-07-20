@@ -94,6 +94,10 @@ jobs:
 Here we run the test on its own job, so that it gets it's own status on the PR, that you can require separately from the release job in your branch protection.
 The release job runs if the tests pass, we always package the gem to test that works. For release we use a conditional along with the actions inputs to push release versions for the main branch only and push pre-releases for PR.
 
+### Debugging
+
+This action supports [debug logging](https://docs.github.com/en/actions/managing-workflow-runs/enabling-debug-logging#enabling-step-debug-logging). Enable it by setting the `ACTIONS_STEP_DEBUG` secret to `true` on your repository.
+
 ## Inputs
 
 ### gem-glob
