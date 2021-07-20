@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e -o pipefail
 
+exec 19> >( sed -e's/^/::debug::/g' )
+BASH_XTRACEFD=19
+set -x
+
 KEY=""
 PRE_RELEASE=false
 TAG_RELEASE=false
