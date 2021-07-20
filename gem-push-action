@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 set -e -o pipefail
 
+if [ "$ACTIONS_STEP_DEBUG" = "true" ]
+then
+  set -x
+fi
+
 KEY=""
 PRE_RELEASE=false
 TAG_RELEASE=false
