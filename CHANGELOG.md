@@ -4,6 +4,10 @@ TODO: v2 changes
 
 ## [Unreleased]
 
+## [2.4.1] - 2021-07-20
+
+- Fix: detect when allowed_push_host or GEM_HOST is not set
+
 ## [2.4.0] - 2021-07-20
 
 - Add: support for `ACTIONS_STEP_DEBUG` to see what the push script is doing

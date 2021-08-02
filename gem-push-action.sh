@@ -44,6 +44,12 @@ GEM_FILE="$1"
 push_host="$(parse-gemspec --push-host)"
 GEM_HOST="${GEM_HOST:-$push_host}"
 
+if [ -z "$GEM_HOST" ]
+then
+  echo "::error::Push host is missing! Set \`spec.metadata['allowed_push_host']\` in your gemspec"
+  exit 1
+fi
+
 # test GEM_HOST, gem silently fails with no error if the GEM_HOST redirects
 # see https://github.com/rubygems/rubygems/issues/4458
 test_response_code=$(curl --silent --output /dev/null --write-out "%{http_code}" --request POST "$GEM_HOST/api/v1/gems")
