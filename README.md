@@ -100,9 +100,20 @@ This action supports [debug logging](https://docs.github.com/en/actions/managing
 
 ## Inputs
 
+### working-directory
+Sets the working directory before all other steps occur. This is useful for cases where files like `.ruby-version` and `Gemfile` aren't located in the root directory. For example in a monorepo where the Ruby project is located in its own subfolder.
+
+```yaml
+    name: Push Gem
+      uses: fac/ruby-gem-push-action@v1
+      with:
+        working-directory: './ruby_project/'
+```
+
 ### gem-glob
 
 File glob to match the gem file to push. The default `pkg/*.gem` picks up gems built using `bundle exec rake build`. You may need to set this if your your gem builds another way.
+_Note_: `working-directory` is set before this step, therefore if both inputs are provided, this path will be relative to the `working-directory`.
 
 ```yaml
     - name: Push Gem
