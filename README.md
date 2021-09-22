@@ -3,7 +3,7 @@
 ## Description
 
 Action to push gems to a gem cutter compatible repository. Basically RubyGems or GitHub Packages. It expects the authentication to have already been setup, `~/.gem/credentials` contains a token for the repo and you know the name of the key.
-See [fac/ruby-gem-credentials-action](https://github.com/fac/ruby-gem-credentials-action) for an action to set this up for you. It is actually pretty easy if pushing to the same repo.
+See [fac/ruby-gem-credentials-action](https://github.com/fac/ruby-gem-setup-credentials-action) for an action to set this up for you. It is actually pretty easy if pushing to the same repo.
 
 If the gem version already exists in the repo the action will no-op and still set a success status. This makes it easier to integrate into workflows, safe to re-run (intentionally or accidentally) and wont push duplicate/replacement packages.
 It will still raise an error visible in the summary, letting you know the version already exists.
