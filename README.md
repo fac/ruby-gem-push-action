@@ -132,6 +132,18 @@ If we pushed a gem to the repository, this will be set to the version pushed.
 ## Environment Variables
 
 None.
+
+## Troubleshooting
+
+If when tagging the action fails with `shallow update not allowed` try setting `fetch-depth` to 0, i.e. dont' do a shallow clone.
+
+```yml
+- uses: actions/checkout@v2
+  with:
+    fetch-depth: 0
+```
+
+
 ## Authors
 
 * FreeAgent <opensource@freeagent.com>
