@@ -1,6 +1,8 @@
 # See: https://docs.github.com/en/actions/creating-actions
 name: Gem Push
 author: FreeAgent
+icon: arrow-up-circle
+color: red
 description: Push gem packages to a rubygems compatible repository
 inputs:
   key:
