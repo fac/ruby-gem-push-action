@@ -4,6 +4,11 @@ TODO: v2 changes
 
 ## [Unreleased]
 
+## [2.5.0] - 2022-10-18
+
+- Update: Switch to the new method of setting outputs (fac/ruby-gem-push-action/pull/16)
+- Update: Updated Linters to latest versions
+
 ## [2.4.1] - 2021-07-20
 
 - Fix: detect when allowed_push_host or GEM_HOST is not set
