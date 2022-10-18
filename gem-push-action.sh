@@ -84,7 +84,7 @@ if ! gem push --key="$KEY" --host "$GEM_HOST" "$GEM_FILE" >push.out; then
     exit $gemerr
 fi
 
-echo "::set-output name=pushed-version::$( parse-gemspec --version )"
+echo "pushed-version=$(parse-gemspec --version)" >> "$GITHUB_OUTPUT"
 
 if [[ $TAG_RELEASE == true ]]; then
     tagname="v$( parse-gemspec --version )"
