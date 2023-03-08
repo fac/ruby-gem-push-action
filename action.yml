@@ -18,6 +18,10 @@ inputs:
   tag:
     description: After pushing a new gem version, git tag with the version string
     default: true
+  working-directory:
+    description: "The working directory of the ruby project. Useful for cases where files like .ruby-version and Gemfile aren't located in the root directory."
+    required: false
+    default: "."
 outputs:
   pushed-version:
     description: "The version of the gem pushed to the repository"
@@ -34,4 +38,5 @@ runs:
         args=""
         [ '${{ inputs.pre-release }}' == true ] && args="$args -p"
         [ '${{ inputs.tag }}' == true ] && args="$args -t"
+        [ ! -z ${{ inputs.working-directory }} ] && cd ${{ inputs.working-directory }}
         gem-push-action.sh -k "${{inputs.key}}" $args ${{inputs.gem-glob}}

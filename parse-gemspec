@@ -5,12 +5,12 @@ require 'optparse'
 gemspecs = Dir["*.gemspec"]
 
 if gemspecs.empty?
-    warn "No gemspec found"
+    warn "No gemspec found in #{Dir.pwd}"
     exit 10
 end
 
 if gemspecs.count > 1
-    warn "More than one gemspec found"
+    warn "More than one gemspec found in #{Dir.pwd}"
     exit 10
 end
 
