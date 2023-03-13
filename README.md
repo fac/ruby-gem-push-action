@@ -105,7 +105,7 @@ Sets the working directory before all other steps occur. This is useful for case
 
 ```yaml
     name: Push Gem
-      uses: fac/ruby-gem-push-action@v1
+      uses: fac/ruby-gem-push-action@v2
       with:
         working-directory: './ruby_project/'
 ```
@@ -117,7 +117,7 @@ _Note_: `working-directory` is set before this step, therefore if both inputs ar
 
 ```yaml
     - name: Push Gem
-      uses: fac/ruby-gem-push-action@v1
+      uses: fac/ruby-gem-push-action@v2
       with:
         gem-glob: build/special.gem
 ```
