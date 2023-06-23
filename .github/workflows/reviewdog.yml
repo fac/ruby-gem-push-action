@@ -1,25 +1,24 @@
-name: reviewdog
-on: [pull_request]
+name: Lint workflow files
+
+on:
+  push:
+    paths:
+      - '.github/workflows/*.yml'
+      - '.github/workflows/*.yaml'
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+    paths:
+      - '.github/workflows/*.yml'
+      - '.github/workflows/*.yaml'
+
+permissions:
+  pull-requests: write
+  contents: read
+
 jobs:
   actionlint:
-    name: runner / actionlint
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-      - name: actionlint
-        uses: reviewdog/action-actionlint@v1.33.0
-        with:
-          fail_on_error: true
-          reporter: github-pr-review
-  shellcheck:
-    name: runner / shellcheck
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: shellcheck
-        uses: reviewdog/action-shellcheck@v1
-        with:
-          fail_on_error: true
-          reporter: github-pr-review
+    uses: fac/hermod/.github/workflows/actionlint.yml@master
+    secrets: inherit
